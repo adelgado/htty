@@ -36,6 +36,7 @@ module HTTY::CLI::InputDevice
         begin
           command_line = ''
           while command_line.empty? do
+            @display.set_terminal_width(Readline.get_screen_size[1])
             if (command_line = Readline.readline(@display.formatted_prompt, true)).nil?
               raise Interrupt
             end

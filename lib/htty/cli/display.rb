@@ -83,7 +83,7 @@ module HTTY::CLI::Display
   end
 
   def formatted_prompt_for(request)
-    format_request_uri(request.uri) + normal('> ')
+    wrap_string_to_terminal_width(format_request_uri(request.uri) + normal('> '))
   end
 
   def say(message, style=:normal)
@@ -183,6 +183,14 @@ module HTTY::CLI::Display
     end.join "\n"
   end
 
+  def set_terminal_width(width)
+    @terminal_width = width
+  end
+
+  def terminal_width
+    @terminal_width or 80
+  end
+
 private
 
   def format_request_uri(uri)
@@ -202,4 +210,16 @@ private
     end
   end
 
+  def wrap_string_to_terminal_width(string)
+    if terminal_width > 0 and string.length >= terminal_width
+      string = wrap_string_to_width(string, terminal_width)
+    end
+
+    return string
+  end
+
+  def wrap_string_to_width(string, width)
+    # May break escape sequences, sorry =/
+    string.chars.each_slice(width).map(&:join).join "\n"
+  end
 end
